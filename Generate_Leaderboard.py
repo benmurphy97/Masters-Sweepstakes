@@ -103,7 +103,7 @@ sorted_leaderboard = output_df[['Rank',
                                 'Cut', 'Cut Score',
                                 'Doubt It', 'Doubt It Score',
                                 'Past It', 'Past It Score'
-                                ]].sort_values(by=['Lowest 3 Scores', 'Favourites Score', 'Maybes Score', 'Possibles Score'], ascending=True).reset_index(drop=True)
+                                ]].sort_values(by=['Lowest 3 Scores', 'Players making cut'], ascending=[True, False]).reset_index(drop=True)
 
 
 
