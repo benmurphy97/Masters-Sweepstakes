@@ -34,7 +34,7 @@ picks = {
     'Eoin Higgins': ['Justin Thomas', 'Tommy Fleetwood', 'Justin Rose', 'Cameron Champ', 'Henrik Stenson', 'Vijay Singh'],
     'Matthew Odlum': ['Dustin Johnson', 'Webb Simpson', 'Abraham Ancer', 'Sebastian Munoz', 'Bernhard Langer', 'Vijay Singh'],
     'Sean Patchell': ['Dustin Johnson', 'Adam Scott', 'Abraham Ancer', 'Kevin Na', 'Charl Schwartzel', 'Jose Maria Olazabal'],
-    'Barry Fitzpatrick': ['Jordan Spieth', 'Matthew Fitzpatrick', 'Gary Woodland', 'Jimmy Walker', 'Bernhard Langer', 'Jim Herman'],
+    'Barry Fitzpatrick': ['Jordan Spieth', 'Tommy Fleetwood', 'Gary Woodland', 'Jimmy Walker', 'Bernhard Langer', 'Jim Herman'],
     'Brian Bobbett': ['Justin Thomas', 'Matthew Fitzpatrick', 'Francesco Molinari', 'Ryan Palmer', 'Charl Schwartzel', 'Robert Streb'],
     'Alan Holmes': ['Justin Thomas', 'Daniel Berger', 'Billy Horschel', 'Gary Woodland', 'Martin Laird', 'Vijay Singh'],
     'Rory Collins': ['Jordan Spieth', 'Daniel Berger', 'Brian Harman', 'Robert MacIntyre', 'Charl Schwartzel', 'Vijay Singh'],
@@ -60,10 +60,11 @@ picks = {
 
 
 output_list = []
-# Get everyones current standings
 for i in picks.keys():
     output = {
         'Player': i,
+        
+        'Players making cut': len(df.loc[(df['NAME'].isin(picks[i])) & (df['LATEST_SCORE'] <= 3)]),
         
         'Favourites': picks[i][0],
         'Favourites Score': df.loc[df['NAME'] == (picks[i][0])]['LATEST_SCORE'].values[0],
@@ -90,9 +91,12 @@ for i in picks.keys():
     
 output_df = pd.DataFrame(output_list)
 
-# create dataframe
-sorted_leaderboard = output_df[['Player',
+output_df['Rank'] = output_df['Lowest 3 Scores'].rank(method='min').astype(int)
+
+sorted_leaderboard = output_df[['Rank',
+                                'Player',
                                 'Lowest 3 Scores',
+                                'Players making cut',
                                 'Favourites','Favourites Score', 
                                 'Maybes', 'Maybes Score', 
                                 'Possibles', 'Possibles Score',
@@ -101,11 +105,14 @@ sorted_leaderboard = output_df[['Player',
                                 'Past It', 'Past It Score'
                                 ]].sort_values(by=['Lowest 3 Scores', 'Favourites Score', 'Maybes Score', 'Possibles Score'], ascending=True).reset_index(drop=True)
 
+
+
 # print(sorted_leaderboard)
 
 # Write to excel file and perform formatting
 # Create a Pandas Excel writer using XlsxWriter as the engine.
 path_to_data_location = '/Users/benmurphy/OneDrive/Projects/Masters Sweepstakes/Data'
+
 writer = pd.ExcelWriter(path_to_data_location + '/Masters Sweepstakes Leaderboard.xlsx', engine='xlsxwriter')
 
 # Convert the dataframe to an XlsxWriter Excel object.
@@ -115,36 +122,29 @@ sorted_leaderboard.to_excel(writer, sheet_name='Sheet1', na_rep="-", index=False
 workbook  = writer.book
 worksheet = writer.sheets['Sheet1']
 
-# top_3_format = workbook.add_format()
-# top_3_format.set_bg_color('#FFFF00')
-# top_3_format.set_font_color('black')
-# worksheet.set_row(1, 20, top_3_format)
-
 # centre the score columns
 centre_cell_format = workbook.add_format()
 centre_cell_format.set_align('center')
 centre_cell_format.set_font_size(12)
 
-worksheet.set_column(1, 1, 14, centre_cell_format)
-worksheet.set_column(3, 3, 14, centre_cell_format)
-worksheet.set_column(5, 5, 14, centre_cell_format)
-worksheet.set_column(7, 7, 14, centre_cell_format)
-worksheet.set_column(9, 9, 14, centre_cell_format)
-worksheet.set_column(11, 11, 14, centre_cell_format)
-worksheet.set_column(13, 13, 14, centre_cell_format)
+worksheet.set_column(0, 0, 14, centre_cell_format)
+worksheet.set_column(2, 2, 14, centre_cell_format)
+for i in range(5, 16, 2):
+    worksheet.set_column(i, i, 14, centre_cell_format)
+
+centre_cell_format2 = workbook.add_format()
+centre_cell_format2.set_align('center')
+centre_cell_format2.set_font_size(12)
+worksheet.set_column(3, 3, 18, centre_cell_format2)
 
 # left align the player name columns
 left_cell_format = workbook.add_format()
 left_cell_format.set_align('left')
 left_cell_format.set_font_size(14)
 
-worksheet.set_column(0, 0, 16, left_cell_format)
-worksheet.set_column(2, 2, 16, left_cell_format)
-worksheet.set_column(4, 4, 16, left_cell_format)
-worksheet.set_column(6, 6, 16, left_cell_format)
-worksheet.set_column(8, 8, 16, left_cell_format)
-worksheet.set_column(10, 10, 16, left_cell_format)
-worksheet.set_column(12, 12, 16, left_cell_format)
+worksheet.set_column(1, 1, 16, left_cell_format)
+for i in range(4, 15, 2):
+    worksheet.set_column(i, i, 16, left_cell_format)
+    
 
-# save sheet in file
 writer.save()
