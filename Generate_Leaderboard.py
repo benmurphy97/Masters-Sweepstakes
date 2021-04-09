@@ -115,10 +115,10 @@ sorted_leaderboard.to_excel(writer, sheet_name='Sheet1', na_rep="-", index=False
 workbook  = writer.book
 worksheet = writer.sheets['Sheet1']
 
-top_3_format = workbook.add_format()
-top_3_format.set_bg_color('#FFFF00')
-top_3_format.set_font_color('black')
-worksheet.set_row(1, 20, top_3_format)
+# top_3_format = workbook.add_format()
+# top_3_format.set_bg_color('#FFFF00')
+# top_3_format.set_font_color('black')
+# worksheet.set_row(1, 20, top_3_format)
 
 # centre the score columns
 centre_cell_format = workbook.add_format()
