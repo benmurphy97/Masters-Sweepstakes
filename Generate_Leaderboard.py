@@ -1,5 +1,6 @@
 import pandas as pd
 import ssl
+import xlsxwriter 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 url = 'https://www.augusta.com/masters/leaderboard'
@@ -100,4 +101,50 @@ sorted_leaderboard = output_df[['Player',
                                 'Past It', 'Past It Score'
                                 ]].sort_values(by=['Lowest 3 Scores', 'Favourites Score', 'Maybes Score', 'Possibles Score'], ascending=True).reset_index(drop=True)
 
-print(sorted_leaderboard)
+# print(sorted_leaderboard)
+
+# Write to excel file and perform formatting
+# Create a Pandas Excel writer using XlsxWriter as the engine.
+path_to_data_location = '/Users/benmurphy/OneDrive/Projects/Masters Sweepstakes/Data'
+writer = pd.ExcelWriter(path_to_data_location + '/Masters Sweepstakes Leaderboard.xlsx', engine='xlsxwriter')
+
+# Convert the dataframe to an XlsxWriter Excel object.
+sorted_leaderboard.to_excel(writer, sheet_name='Sheet1', na_rep="-", index=False)
+
+# Get the xlsxwriter objects from the dataframe writer object.
+workbook  = writer.book
+worksheet = writer.sheets['Sheet1']
+
+top_3_format = workbook.add_format()
+top_3_format.set_bg_color('#FFFF00')
+top_3_format.set_font_color('black')
+worksheet.set_row(1, 20, top_3_format)
+
+# centre the score columns
+centre_cell_format = workbook.add_format()
+centre_cell_format.set_align('center')
+centre_cell_format.set_font_size(12)
+
+worksheet.set_column(1, 1, 14, centre_cell_format)
+worksheet.set_column(3, 3, 14, centre_cell_format)
+worksheet.set_column(5, 5, 14, centre_cell_format)
+worksheet.set_column(7, 7, 14, centre_cell_format)
+worksheet.set_column(9, 9, 14, centre_cell_format)
+worksheet.set_column(11, 11, 14, centre_cell_format)
+worksheet.set_column(13, 13, 14, centre_cell_format)
+
+# left align the player name columns
+left_cell_format = workbook.add_format()
+left_cell_format.set_align('left')
+left_cell_format.set_font_size(14)
+
+worksheet.set_column(0, 0, 16, left_cell_format)
+worksheet.set_column(2, 2, 16, left_cell_format)
+worksheet.set_column(4, 4, 16, left_cell_format)
+worksheet.set_column(6, 6, 16, left_cell_format)
+worksheet.set_column(8, 8, 16, left_cell_format)
+worksheet.set_column(10, 10, 16, left_cell_format)
+worksheet.set_column(12, 12, 16, left_cell_format)
+
+# save sheet in file
+writer.save()
