@@ -64,7 +64,7 @@ for i in picks.keys():
     output = {
         'Player': i,
         
-        'Players making cut': len(df.loc[(df['NAME'].isin(picks[i])) & (df['POS'] != 'CUT')]),
+        'Players making cut': len(df.loc[(df['NAME'].isin(picks[i])) & (~df['POS'].isin(['CUT','DQ']))]),
         
         'Favourites': picks[i][0],
 #         'Favourites Score': df.loc[df['NAME'] == (picks[i][0])]['LATEST_SCORE'].values[0],
@@ -171,7 +171,6 @@ sorted_leaderboard = output_df[['Rank',
                                 'Past It', 'Past It Score'
                                 ]].sort_values(by=['Lowest 3 Scores', 'Players making cut'], ascending=[True, False]).reset_index(drop=True)
 
-
 # Create a Pandas Excel writer using XlsxWriter as the engine.
 path_to_data_location = '/Users/benmurphy/OneDrive/Projects/Masters Sweepstakes/Data'
 writer = pd.ExcelWriter(path_to_data_location + '/Masters Sweepstakes Leaderboard.xlsx', engine='xlsxwriter')
@@ -190,8 +189,13 @@ centre_cell_format.set_font_size(12)
 
 worksheet.set_column(0, 0, 14, centre_cell_format)
 worksheet.set_column(2, 2, 14, centre_cell_format)
-for i in range(3, 16, 2):
+for i in range(5, 16, 2):
     worksheet.set_column(i, i, 14, centre_cell_format)
+
+centre_cell_format2 = workbook.add_format()
+centre_cell_format2.set_align('center')
+centre_cell_format2.set_font_size(12)
+worksheet.set_column(3, 3, 18, centre_cell_format2)
 
 # left align the player name columns
 left_cell_format = workbook.add_format()
