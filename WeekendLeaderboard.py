@@ -67,22 +67,16 @@ for i in picks.keys():
         'Players making cut': len(df.loc[(df['NAME'].isin(picks[i])) & (~df['POS'].isin(['CUT','DQ']))]),
         
         'Favourites': picks[i][0],
-#         'Favourites Score': df.loc[df['NAME'] == (picks[i][0])]['LATEST_SCORE'].values[0],
         
         'Maybes': picks[i][1],
-#         'Maybes Score': df.loc[df['NAME'] == (picks[i][1])]['LATEST_SCORE'].values[0],
         
         'Possibles': picks[i][2],
-#         'Possibles Score': df.loc[df['NAME'] == (picks[i][2])]['LATEST_SCORE'].values[0],
         
         'Cut': picks[i][3],
-        'Cut Score': df.loc[df['NAME'] == (picks[i][3])]['LATEST_SCORE'].values[0],
         
         'Doubt It': picks[i][4],
-        'Doubt It Score': df.loc[df['NAME'] == (picks[i][4])]['LATEST_SCORE'].values[0],
         
         'Past It': picks[i][5],
-        'Past It Score': df.loc[df['NAME'] == (picks[i][5])]['LATEST_SCORE'].values[0],
         
         'Lowest 3 Scores': df.loc[(df['NAME'].isin(picks[i])) & (df['POS'] != 'CUT')].iloc[:3]['LATEST_SCORE'].sum()
     }
