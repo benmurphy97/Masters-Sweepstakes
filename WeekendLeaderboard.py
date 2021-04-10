@@ -173,7 +173,8 @@ sorted_leaderboard = output_df[['Rank',
 
 
 # Create a Pandas Excel writer using XlsxWriter as the engine.
-writer = pd.ExcelWriter('Test Leaderboard.xlsx', engine='xlsxwriter')
+path_to_data_location = '/Users/benmurphy/OneDrive/Projects/Masters Sweepstakes/Data'
+writer = pd.ExcelWriter(path_to_data_location + '/Masters Sweepstakes Leaderboard.xlsx', engine='xlsxwriter')
 
 # Convert the dataframe to an XlsxWriter Excel object.
 sorted_leaderboard.to_excel(writer, sheet_name='Sheet1', na_rep="-", index=False)
