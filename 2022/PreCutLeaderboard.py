@@ -46,7 +46,7 @@ picks = {
         'Brian Moran': ['Brooks Koepka', 'Sam Burns', 'Abraham Ancer', 'Tom Hoge', 'Padraig Harrington', 'Harry Higgs'], 
         'Sean Patchell': ['Brooks Koepka', 'Joaquin Niemann', 'Max Homa', 'Kevin Kisner', 'Francesco Molinari', 'Harry Higgs'],
         'Kev Moran ': ['Cameron Smith', 'Shane Lowry', 'Justin Rose', 'Christiaan Bezuidenhout', 'Padraig Harrington', 'Harry Higgs'], 
-        "Lorcan O'Dea": ['Jon Rahm', 'Paul Casey', 'Si Woo Kim', 'Lee Westwood', 'Padraig Harrington', 'Charl Schwartzel'], 
+        "Lorcan O'Dea": ['Jon Rahm', 'Shane Lowry', 'Si Woo Kim', 'Lee Westwood', 'Padraig Harrington', 'Charl Schwartzel'], 
         'Fergal Moran': ['Cameron Smith', 'Tony Finau', 'Tiger Woods', 'Erik van Rooyen', 'Billy Horschel', 'Harry Higgs'], 
         'Shay Batelle': ['Scottie Scheffler', 'Joaquin Niemann', 'Tiger Woods', 'Kevin Kisner', 'Garrick Higgo', 'Bernhard Langer'], 
         'Barry Fitzpatrick': ['Brooks Koepka', 'Bryson DeChambeau', 'Adam Scott', 'Lee Westwood', 'Zach Johnson', 'Laird Shepherd (a)']
