@@ -1,8 +1,4 @@
 import pandas as pd
-import ssl
-import xlsxwriter 
-import requests
-import json
 
 
 url = 'https://www.espn.com/golf/leaderboard'
@@ -19,70 +15,71 @@ df.loc[df['SCORE']=='E', 'SCORE'] = '+0'
 # remove the + sings from the overpar scores
 df['SCORE'] = df['SCORE'].apply(lambda x: int(x[1:]) if x[0] != '-' else int(x))
 
+
+# get picks from the excel and format to dict
+# picks = pd.read_excel('Masters-Sweepstakes/2022/picks.xlsx', header=0)
+# picks.set_index('Players', inplace=True)
+
+# picks_d = {}
+# for i in range(len(picks)):
+#     player_name = str(picks.iloc[i].name)
+#     golfers = list(picks.iloc[i].values)
+#     picks_d[player_name] = golfers
+
 picks = {
-    'Jimmy ODowd': ['Jordan Spieth', 'Tommy Fleetwood', 'Ian Poulter', 'Danny Willett', 'Martin Laird', 'Tyler Strafaci'],
-    'Ben Murphy': ['Bryson DeChambeau', 'Daniel Berger', 'Matt Wallace', 'Dylan Frittelli', 'Bernd Wiesberger', 'Mike Weir'],
-    'Ciarán Cahill': ['Justin Thomas', 'Sungjae Im', 'Abraham Ancer', 'Cameron Champ', 'Jimmy Walker', 'Tyler Strafaci'],
-    'Paddy ODowd': ['Justin Thomas', 'Jason Day', 'Abraham Ancer', 'Cameron Champ', 'Jimmy Walker', 'Tyler Strafaci'],
-    'Eoghan Gleeson': ['Justin Thomas', 'Sergio Garcia', 'Billy Horschel', 'Phil Mickelson', 'Bernd Wiesberger', 'Mike Weir'],
-    'Jacob Henry-Hayes': ['Patrick Cantlay', 'Matthew Fitzpatrick', 'Billy Horschel', 'Phil Mickelson', 'C.T. Pan', 'Tyler Strafaci'],
-    'Eoin Higgins': ['Justin Thomas', 'Tommy Fleetwood', 'Justin Rose', 'Cameron Champ', 'Henrik Stenson', 'Vijay Singh'],
-    'Matthew Odlum': ['Dustin Johnson', 'Webb Simpson', 'Abraham Ancer', 'Sebastian Munoz', 'Bernhard Langer', 'Vijay Singh'],
-    'Sean Patchell': ['Dustin Johnson', 'Adam Scott', 'Abraham Ancer', 'Kevin Na', 'Charl Schwartzel', 'Jose Maria Olazabal'],
-    'Barry Fitzpatrick': ['Jordan Spieth', 'Tommy Fleetwood', 'Gary Woodland', 'Jimmy Walker', 'Bernhard Langer', 'Jim Herman'],
-    'Brian Bobbett': ['Justin Thomas', 'Matthew Fitzpatrick', 'Francesco Molinari', 'Ryan Palmer', 'Charl Schwartzel', 'Robert Streb'],
-    'Alan Holmes': ['Justin Thomas', 'Daniel Berger', 'Billy Horschel', 'Gary Woodland', 'Martin Laird', 'Vijay Singh'],
-    'Rory Collins': ['Jordan Spieth', 'Daniel Berger', 'Brian Harman', 'Robert MacIntyre', 'Charl Schwartzel', 'Vijay Singh'],
-    'Alex Marshall': ['Justin Thomas', 'Webb Simpson', 'Brian Harman', 'Sebastian Munoz', 'C.T. Pan', 'Charles Osborne'],
-    'Ryan Johnson': ['Dustin Johnson', 'Sergio Garcia', 'Justin Rose', 'Phil Mickelson', 'Charl Schwartzel', 'Vijay Singh'],
-    'James Browne': ['Jordan Spieth', 'Matthew Fitzpatrick', 'Matt Wallace', 'Phil Mickelson', 'Jimmy Walker', 'Jose Maria Olazabal'],
-    'Faolan Crowe': ['Jon Rahm', 'Webb Simpson', 'Matthew Wolff', 'Phil Mickelson', 'C.T. Pan', 'Mike Weir'],
-    'Kevin Moran': ['Xander Schauffele', 'Sergio Garcia', 'Matt Kuchar', 'Christiaan Bezuidenhout', 'C.T. Pan', 'Tyler Strafaci'],
-    'Brian Moran': ['Collin Morikawa', 'Tyrrell Hatton', 'Si Woo Kim', 'Gary Woodland', 'C.T. Pan', 'Tyler Strafaci'],
-    'Fergal Moran': ['Jordan Spieth', 'Scottie Scheffler', 'Matt Kuchar', 'Dylan Frittelli', 'Martin Laird', 'Jose Maria Olazabal'],
-    'Jack Dignam': ['Brooks Koepka', 'Shane Lowry', 'Billy Horschel', 'Zach Johnson', 'Henrik Stenson', 'Jose Maria Olazabal'],
-    'Ted ODonoghue': ['Lee Westwood', 'Corey Conners', 'Matthew Wolff', 'Phil Mickelson', 'C.T. Pan', 'Robert Streb'],
-    'Jack Byrne': ['Jon Rahm', 'Adam Scott', 'Billy Horschel', 'Sebastian Munoz', 'Charl Schwartzel', 'Jose Maria Olazabal'],
-    'Jamie Murphy': ['Jordan Spieth', 'Sungjae Im', 'Billy Horschel', 'Kevin Kisner', 'Fred Couples', 'Mike Weir'],
-    'Dave Bobbett': ['Bryson DeChambeau', 'Daniel Berger', 'Billy Horschel', 'Gary Woodland', 'Charl Schwartzel', 'Vijay Singh'],
-    'Dylan Walsh': ['Justin Thomas', 'Shane Lowry', 'Marc Leishman', 'Phil Mickelson', 'Brendon Todd', 'Vijay Singh'],
-    'Alan Horgan': ['Jordan Spieth', 'Daniel Berger', 'Si Woo Kim', 'Dylan Frittelli', 'Bernd Wiesberger', 'Jose Maria Olazabal'],
-    'Fiachra Keane': ['Justin Thomas', 'Corey Conners', 'Francesco Molinari', 'Phil Mickelson', 'Charl Schwartzel', 'Sandy Lyle'],
-    'Mark Kirwan': ['Dustin Johnson', 'Sungjae Im', 'Abraham Ancer', 'Phil Mickelson', 'Jimmy Walker', 'Tyler Strafaci'],
-    'Niall Bobbett': ['Jordan Spieth', 'Daniel Berger', 'Matt Kuchar', 'Ryan Palmer', 'Bernd Wiesberger', 'Robert Streb'],
-    'Shay Moran': ['Jordan Spieth', 'Sergio Garcia', 'Brian Harman', 'Phil Mickelson', 'Martin Laird', 'Vijay Singh']
+        'Eoghan Gleeson': ['Cameron Smith', 'Tyrrell Hatton', 'Adam Scott', 'Jason Kokrak', 'Billy Horschel', 'Lucas Glover'], 
+        'Gary Gleeson': ['Justin Thomas', 'Sam Burns', 'Patrick Reed', 'Jason Kokrak', 'Ryan Palmer', 'Lucas Glover'], 
+        'Niall Bobbett': ['Viktor Hovland', 'Shane Lowry', 'Justin Rose', 'Kevin Kisner', 'Billy Horschel', 'Hudson Swafford'], 
+        'Eoin Higgins': ['Justin Thomas', 'Shane Lowry', 'Marc Leishman', 'Robert MacIntyre', 'Francesco Molinari', 'Charl Schwartzel'], 
+        'Alan Holmes': ['Cameron Smith', 'Will Zalatoris', 'Bubba Watson', 'Jason Kokrak', 'Billy Horschel', 'Stewart Hagestad (a)'], 
+        "Michael O'Houlihan": ['Scottie Scheffler', 'Bryson DeChambeau', 'Max Homa', 'Jason Kokrak', 'Min Woo Lee', 'Charl Schwartzel'], 
+        'Conor Bobbett': ['Rory McIlroy', 'Louis Oosthuizen', 'Tiger Woods', 'Lee Westwood', 'Danny Willett', 'Charl Schwartzel'], 
+        'Brian Bobbett': ['Cameron Smith', 'Shane Lowry', 'Tiger Woods', 'Webb Simpson', 'Billy Horschel', 'Charl Schwartzel'], 
+        'David Bobbett': ['Justin Thomas', 'Louis Oosthuizen', 'Patrick Reed', 'Tom Hoge', 'Billy Horschel', 'Charl Schwartzel'], 
+        'Paul Reynolds': ['Collin Morikawa', 'Sam Burns', 'Seamus Power', 'Kevin Kisner', 'Billy Horschel', 'Harry Higgs'], 
+        'Eoin Donohoe': ['Cameron Smith', 'Corey Conners', 'Abraham Ancer', 'Lucas Herbert', 'Francesco Molinari', 'Harry Higgs'],
+        'Shane Bobbett': ['Viktor Hovland', 'Louis Oosthuizen', 'Seamus Power', 'Lee Westwood', 'Billy Horschel', 'Charl Schwartzel'],
+        'Dylan Walsh': ['Viktor Hovland', 'Shane Lowry', 'Abraham Ancer', 'Sepp Straka', 'Billy Horschel', 'James Piot (a)'], 
+        'Tony Walsh': ['Rory McIlroy', 'Shane Lowry', 'Seamus Power', 'Lee Westwood', 'Billy Horschel', 'Fred Couples'], 
+        'Ben Murphy': ['Cameron Smith', 'Shane Lowry', 'Marc Leishman', 'Robert MacIntyre', 'Billy Horschel', 'Hudson Swafford'], 
+        'Gary O Reilly': ['Scottie Scheffler', 'Tyrrell Hatton', 'Tiger Woods', 'Lee Westwood', 'Zach Johnson', 'Charl Schwartzel'],
+        'Brian Moran': ['Brooks Koepka', 'Sam Burns', 'Abraham Ancer', 'Tom Hoge', 'Padraig Harrington', 'Harry Higgs'], 
+        'Sean Patchell': ['Brooks Koepka', 'Joaquin Niemann', 'Max Homa', 'Kevin Kisner', 'Francesco Molinari', 'Harry Higgs'],
+        'Kev Moran ': ['Cameron Smith', 'Shane Lowry', 'Justin Rose', 'Christiaan Bezuidenhout', 'Padraig Harrington', 'Harry Higgs'], 
+        "Lorcan O'Dea": ['Jon Rahm', 'Paul Casey', 'Si Woo Kim', 'Lee Westwood', 'Padraig Harrington', 'Charl Schwartzel'], 
+        'Fergal Moran': ['Cameron Smith', 'Tony Finau', 'Tiger Woods', 'Erik van Rooyen', 'Billy Horschel', 'Harry Higgs'], 
+        'Shay Batelle': ['Scottie Scheffler', 'Joaquin Niemann', 'Tiger Woods', 'Kevin Kisner', 'Garrick Higgo', 'Bernhard Langer'], 
+        'Barry Fitzpatrick': ['Brooks Koepka', 'Bryson DeChambeau', 'Adam Scott', 'Lee Westwood', 'Zach Johnson', 'Laird Shepherd (a)']
 }
 
+# correct spellings
+# unique_player_picks = list(set([i for sublist in list(picks.values()) for i in sublist]))
+# for i in unique_player_picks:
+#     if len(df.loc[df['PLAYER']==i])==0:
+#         print(i)
+#         print(df.loc[df['PLAYER']==i])
+#         print()
 
 
 output_list = []
 for i in picks.keys():
     output = {
         'Player': i,
-        
-        'Players making cut': len(df.loc[(df['NAME'].isin(picks[i])) & (df['LATEST_SCORE'] <= 3)]),
-        
+        'Players making cut': len(df.loc[(df['PLAYER'].isin(picks[i])) & (df['SCORE'] <= 99)]),
         'Favourites': picks[i][0],
-        'Favourites Score': df.loc[df['NAME'] == (picks[i][0])]['LATEST_SCORE'].values[0],
-        
+        'Favourites Score': df.loc[df['PLAYER'] == (picks[i][0])]['SCORE'].values[0],
         'Maybes': picks[i][1],
-        'Maybes Score': df.loc[df['NAME'] == (picks[i][1])]['LATEST_SCORE'].values[0],
-        
+        'Maybes Score': df.loc[df['PLAYER'] == (picks[i][1])]['SCORE'].values[0],
         'Possibles': picks[i][2],
-        'Possibles Score': df.loc[df['NAME'] == (picks[i][2])]['LATEST_SCORE'].values[0],
-        
+        'Possibles Score': df.loc[df['PLAYER'] == (picks[i][2])]['SCORE'].values[0],
         'Cut': picks[i][3],
-        'Cut Score': df.loc[df['NAME'] == (picks[i][3])]['LATEST_SCORE'].values[0],
-        
+        'Cut Score': df.loc[df['PLAYER'] == (picks[i][3])]['SCORE'].values[0],
         'Doubt It': picks[i][4],
-        'Doubt It Score': df.loc[df['NAME'] == (picks[i][4])]['LATEST_SCORE'].values[0],
-        
-        'Past It': picks[i][5],
-        'Past It Score': df.loc[df['NAME'] == (picks[i][5])]['LATEST_SCORE'].values[0],
-        
-        'Lowest 3 Scores': df.loc[df['NAME'].isin(picks[i])].iloc[:3]['LATEST_SCORE'].sum()
+        'Doubt It Score': df.loc[df['PLAYER'] == (picks[i][4])]['SCORE'].values[0],
+        'Hail Mary': picks[i][5],
+        'Hail Mary Score': df.loc[df['PLAYER'] == (picks[i][5])]['SCORE'].values[0],
+        'Lowest 3 Scores': df.loc[df['PLAYER'].isin(picks[i])].iloc[:3]['SCORE'].sum()
     }
-#     print(output)
     output_list.append(output)
     
 output_df = pd.DataFrame(output_list)
@@ -98,7 +95,7 @@ sorted_leaderboard = output_df[['Rank',
                                 'Possibles', 'Possibles Score',
                                 'Cut', 'Cut Score',
                                 'Doubt It', 'Doubt It Score',
-                                'Past It', 'Past It Score'
+                                'Hail Mary', 'Hail Mary Score'
                                 ]].sort_values(by=['Lowest 3 Scores', 'Players making cut'], ascending=[True, False]).reset_index(drop=True)
 
 
@@ -107,7 +104,7 @@ sorted_leaderboard = output_df[['Rank',
 
 # Write to excel file and perform formatting
 # Create a Pandas Excel writer using XlsxWriter as the engine.
-path_to_data_location = '/Users/benmurphy/OneDrive/Projects/Masters Sweepstakes/Data'
+path_to_data_location = '/Users/benmurphy/OneDrive/Projects/Masters Sweepstakes/2022'
 
 writer = pd.ExcelWriter(path_to_data_location + '/Masters Sweepstakes Leaderboard.xlsx', engine='xlsxwriter')
 
