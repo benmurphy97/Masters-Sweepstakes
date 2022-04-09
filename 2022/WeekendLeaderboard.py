@@ -4,7 +4,7 @@ import pandas as pd
 url = 'https://www.espn.com/golf/leaderboard'
 df = pd.read_html(io=url)[0]
 
-df.drop(columns=['Unnamed: 0'], inplace=True) # drop first column
+df.drop(columns=['Unnamed: 0', 'Unnamed: 2'], inplace=True) # drop first column
 
 # replace WD with +99
 df.loc[df['SCORE']=='WD', 'SCORE'] = '+99'
@@ -12,21 +12,10 @@ df.loc[df['SCORE']=='WD', 'SCORE'] = '+99'
 # replace E scores with +0
 df.loc[df['SCORE']=='E', 'SCORE'] = '+0'
 
-df = df.loc[df['SCORE']!='Projected Cut +4']
+df = df.loc[df['SCORE']!='The following players failed to make the cut at +5']
 
 # remove the + sings from the overpar scores
-df['SCORE'] = df['SCORE'].apply(lambda x: int(x[1:]) if x[0] != '-' else int(x))
-
-
-# get picks from the excel and format to dict
-# picks = pd.read_excel('Masters-Sweepstakes/2022/picks.xlsx', header=0)
-# picks.set_index('Players', inplace=True)
-
-# picks_d = {}
-# for i in range(len(picks)):
-#     player_name = str(picks.iloc[i].name)
-#     golfers = list(picks.iloc[i].values)
-#     picks_d[player_name] = golfers
+# df['SCORE'] = df['SCORE'].apply(lambda x: int(x[1:]) if x[0] != '-' else int(x))
 
 picks = {
         'Eoghan Gleeson': ['Cameron Smith', 'Tyrrell Hatton', 'Adam Scott', 'Jason Kokrak', 'Billy Horschel', 'Lucas Glover'], 
@@ -45,29 +34,21 @@ picks = {
         'Tony Walsh': ['Rory McIlroy', 'Shane Lowry', 'Seamus Power', 'Lee Westwood', 'Billy Horschel', 'Fred Couples'], 
         'Ben Murphy': ['Cameron Smith', 'Shane Lowry', 'Marc Leishman', 'Robert MacIntyre', 'Billy Horschel', 'Hudson Swafford'], 
         'Gary O Reilly': ['Scottie Scheffler', 'Tyrrell Hatton', 'Tiger Woods', 'Lee Westwood', 'Zach Johnson', 'Charl Schwartzel'],
-        'Brian Moran': ['Brooks Koepka', 'Sam Burns', 'Abraham Ancer', 'Tom Hoge', 'Padraig Harrington', 'Harry Higgs'], 
+        # 'Brian Moran': ['Brooks Koepka', 'Sam Burns', 'Abraham Ancer', 'Tom Hoge', 'Padraig Harrington', 'Harry Higgs'], 
         'Sean Patchell': ['Brooks Koepka', 'Joaquin Niemann', 'Max Homa', 'Kevin Kisner', 'Francesco Molinari', 'Harry Higgs'],
         'Kev Moran ': ['Cameron Smith', 'Shane Lowry', 'Justin Rose', 'Christiaan Bezuidenhout', 'Padraig Harrington', 'Harry Higgs'], 
         "Lorcan O'Dea": ['Jon Rahm', 'Shane Lowry', 'Si Woo Kim', 'Lee Westwood', 'Padraig Harrington', 'Charl Schwartzel'], 
         'Fergal Moran': ['Cameron Smith', 'Tony Finau', 'Tiger Woods', 'Erik van Rooyen', 'Billy Horschel', 'Harry Higgs'], 
         'Shay Batelle': ['Scottie Scheffler', 'Joaquin Niemann', 'Tiger Woods', 'Kevin Kisner', 'Garrick Higgo', 'Bernhard Langer'], 
-        'Barry Fitzpatrick': ['Brooks Koepka', 'Bryson DeChambeau', 'Adam Scott', 'Lee Westwood', 'Zach Johnson', 'Laird Shepherd (a)']
+        # 'Barry Fitzpatrick': ['Brooks Koepka', 'Bryson DeChambeau', 'Adam Scott', 'Lee Westwood', 'Zach Johnson', 'Laird Shepherd (a)']
 }
-
-# correct spellings
-# unique_player_picks = list(set([i for sublist in list(picks.values()) for i in sublist]))
-# for i in unique_player_picks:
-#     if len(df.loc[df['PLAYER']==i])==0:
-#         print(i)
-#         print(df.loc[df['PLAYER']==i])
-#         print()
 
 
 output_list = []
 for i in picks.keys():
     output = {
         'Player': i,
-        'Players making cut': len(df.loc[(df['PLAYER'].isin(picks[i])) & (df['SCORE'] <= 4)]),
+        'Players making cut': len(df.loc[(df['PLAYER'].isin(picks[i])) & (df['SCORE'] != 'CUT')]),
         'Favourites': picks[i][0],
         'Favourites Score': df.loc[df['PLAYER'] == (picks[i][0])]['SCORE'].values[0],
         'Maybes': picks[i][1],
@@ -80,10 +61,15 @@ for i in picks.keys():
         'Doubt It Score': df.loc[df['PLAYER'] == (picks[i][4])]['SCORE'].values[0],
         'Hail Mary': picks[i][5],
         'Hail Mary Score': df.loc[df['PLAYER'] == (picks[i][5])]['SCORE'].values[0],
-        'Lowest 3 Scores': df.loc[df['PLAYER'].isin(picks[i])].iloc[:3]['SCORE'].sum()
+        # 'Lowest 3 Scores': df.loc[df['PLAYER'].isin(picks[i])].iloc[:3]['SCORE'].sum()
     }
+    # 
+    best_3_scores = df.loc[(df['PLAYER'].isin(picks[i])) & (df['SCORE'] != 'CUT'), 'SCORE'][:3].values.tolist()
+    best_3_scores = [int(i[1:]) if i[0] != '-' else int(i) for i in best_3_scores]
+    best_3_scores_sum = sum(best_3_scores)
+    output['Lowest 3 Scores'] = best_3_scores_sum
+
     output_list.append(output)
-    
 output_df = pd.DataFrame(output_list)
 
 output_df['Rank'] = output_df['Lowest 3 Scores'].rank(method='min').astype(int)
